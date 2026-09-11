@@ -15,8 +15,7 @@ class SignUpView(APIView):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        serializer.validated_data.pop('conf_pass')
-        user = CustomUser.objects.create_user(**serializer.validated_data)
+        user = serializer.save()
 
         return Response(SignUpSerializer(user).data)
 
@@ -60,7 +59,7 @@ class PassChangeView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data)
+        return Response({'msg': 'Parol muvaffaqiyatli o\'zgartirildi'}, status=status.HTTP_200_OK)
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated,]

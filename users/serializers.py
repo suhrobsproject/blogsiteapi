@@ -32,9 +32,8 @@ class SignUpSerializer(serializers.ModelSerializer):
         return username
 
     def create(self, validated_data):
-
+        validated_data.pop('conf_pass', None)
         user = CustomUser.objects.create_user(**validated_data)
-
         return user
 
     def to_representation(self, instance):
@@ -77,7 +76,7 @@ class LoginSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'first_name', 'last_name', 'username', 'phone_number', 'address']
+        fields = ['id', 'first_name', 'last_name', 'username', 'phone_number']
 
 
 
@@ -107,21 +106,6 @@ class PasswordChangeSerializer(serializers.Serializer):
 
         return attrs
 
-
-    def update(self, instance, validated_data):
-        request = self.context['request']
-        current_user = authenticate(username=request.user.username, password=validated_data['old_password'])
-        if current_user is None:
-            raise ValidationError(detail='eski parol xato')
-    
-        current_user.set_password(validated_data['new_password'])
-
-        return instance
-
-    def to_representation(self, instance):
-        return {
-            'msg' : 'parol ozgartirildi'
-        }
 
     def save(self, **kwargs):
         user = self.context['request'].user
